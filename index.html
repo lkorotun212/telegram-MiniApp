@@ -600,6 +600,34 @@ function showSection(id) {
     function closeModal() {
       document.getElementById("modal").style.display = "none";
     }
+    // Приклад функції для надсилання даних на сервер або до бота
+function sendUserDataToBot(user) {
+    const url = 'https://yourserver.com/save-user-data';  // URL вашого сервера для збереження даних
+    const data = {
+        user_id: user.id,
+        first_name: user.first_name,
+        last_name: user.last_name,
+        photo_url: user.photo_url
+    };
+
+    fetch(url, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(data)
+    })
+    .then(response => response.json())
+    .then(data => console.log('User data saved:', data))
+    .catch(error => console.error('Error saving user data:', error));
+}
+
+// Викликайте цю функцію, передаючи отримані дані користувача
+if (tg.initDataUnsafe?.user) {
+    const user = tg.initDataUnsafe.user;
+    sendUserDataToBot(user);  // Надсилаємо дані на сервер
+}
+
   </script>
 </body>
 </html>
