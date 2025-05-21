@@ -1,0 +1,605 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Городська доставка</title>
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+  <style>
+body {
+  margin: 0;
+  font-family: 'Roboto', sans-serif;
+  background-color: #121212;
+  color: #ffffff;
+  transition: background-color 0.3s, color 0.3s;
+}
+
+body.light-theme {
+  background-color: #ffffff;
+  color: #121212;
+}
+
+.loader-screen {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: #FFD500;
+  color: black;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  z-index: 1000;
+}
+
+.loader-logo {
+  width: 260px;
+  max-width: 80%;
+  height: auto;
+  margin-bottom: 24px;
+  transition: transform 0.3s ease-in-out;
+}
+
+.loader {
+  margin-top: 24px;
+  border: 4px solid #f3f3f3;
+  border-radius: 50%;
+  border-top: 4px solid #555;
+  width: 30px;
+  height: 30px;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.app {
+  display: none;
+  flex-direction: column;
+  height: 100vh;
+}
+
+.map-container iframe {
+  border: none;
+  width: 100%;
+  height: 250px;
+}
+
+.section {
+  padding: 16px;
+  background-color: #1e1e1e;
+  border-top: 1px solid #333;
+}
+
+body.light-theme .section {
+  background-color: #f4f4f4;
+  color: #121212;
+}
+
+input, textarea, select {
+  width: 100%;
+  padding: 10px;
+  margin-top: 8px;
+  border-radius: 8px;
+  border: 1px solid #444;
+  background-color: #2a2a2a;
+  color: #fff;
+  font-size: 14px;
+}
+
+body.light-theme input, body.light-theme textarea, body.light-theme select {
+  background-color: #ffffff;
+  color: #121212;
+  border-color: #ccc;
+}
+
+.btn {
+  width: 100%;
+  padding: 12px;
+  margin-top: 16px;
+  border: none;
+  border-radius: 12px;
+  background: linear-gradient(145deg, #9b59b6, #8e44ad);
+  color: white;
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+  transition: all 0.2s ease-in-out;
+}
+
+.btn:hover {
+  background: linear-gradient(145deg, #8e44ad, #732d91);
+  transform: translateY(-2px);
+}
+
+.bottom-nav {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 20px;
+  background-color: #1e1e1e;
+  border-top: 1px solid #333;
+  position: fixed;
+  bottom: 0;
+  width: 100%;
+  z-index: 999;
+}
+
+body.light-theme .bottom-nav {
+  background-color: #f4f4f4;
+}
+
+.nav-item {
+  flex: 1;
+  text-align: center;
+  color: #ccc;
+  font-size: 12px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  cursor: pointer;
+  transition: color 0.3s ease, transform 0.3s ease;
+}
+
+.nav-item:hover {
+  color: #ffffff;
+  transform: translateY(-2px);
+}
+
+.nav-item.active {
+  color: #fff;
+  font-weight: bold;
+}
+
+.nav-center-btn {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  background-color: #8e44ad;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  top: -28px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+  z-index: 100;
+  transition: transform 0.6s ease-in-out;
+}
+
+.nav-center-btn:hover {
+  transform: rotate(360deg);
+}
+
+.plus-btn {
+  color: white;
+  font-size: 32px;
+  font-weight: bold;
+}
+
+.profile, .tariffs, .edit-profile-section {
+  display: none;
+  padding: 16px;
+}
+
+.profile-circle img {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  margin: auto;
+  display: block;
+}
+
+.phone-number {
+  margin-top: 10px;
+  font-size: 16px;
+  text-align: center;
+}
+
+.profile-actions div, .tariff-item {
+  padding: 10px 0;
+  border-bottom: 1px solid #333;
+  cursor: pointer;
+  color: #bb86fc;
+}
+
+.modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1001;
+}
+
+.modal-content {
+  background-color: #1e1e1e;
+  padding: 20px;
+  border-radius: 8px;
+  text-align: center;
+  width: 80%;
+  max-width: 300px;
+}
+
+.modal-content h3 {
+  margin-bottom: 16px;
+}
+
+.history {
+  padding: 16px;
+  background-color: #1e1e1e;
+  color: #ffffff;
+}
+
+body.light-theme .history {
+  background-color: #f4f4f4;
+  color: #121212;
+}
+
+.history h3 {
+  margin-bottom: 12px;
+}
+
+.history ul {
+  list-style: none;
+  padding: 0;
+}
+
+.history li {
+  padding: 10px;
+  border-bottom: 1px solid #333;
+}
+
+.continue-btn {
+  position: relative;
+  margin: 16px 0;
+  z-index: 1;
+}
+
+.input-group {
+  margin-bottom: 16px;
+}
+
+.input-group label {
+  font-size: 14px;
+  color: #ccc;
+  margin-bottom: 6px;
+  display: block;
+}
+
+.input-with-icon {
+  position: relative;
+}
+
+.input-with-icon input,
+.input-with-icon textarea {
+  width: 100%;
+  padding: 12px 36px 12px 12px;
+  border-radius: 10px;
+  border: 1px solid #333;
+  background-color: #2a2a2a;
+  color: #fff;
+  font-size: 14px;
+}
+
+body.light-theme .input-with-icon input,
+body.light-theme .input-with-icon textarea {
+  background-color: #ffffff;
+  color: #121212;
+  border-color: #ccc;
+}
+
+.input-with-icon .icon {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #bb86fc;
+  font-size: 18px;
+}
+
+#payment-section {
+  background-color: #2a2a2a;
+  border-radius: 15px;
+  padding: 30px;
+  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.4);
+  transition: all 0.3s ease;
+}
+
+#payment-section h3 {
+  font-size: 26px;
+  font-weight: bold;
+  color: #ffffff;
+  text-align: center;
+}
+
+#payment-section p {
+  font-size: 18px;
+  color: #ffffff;
+  margin-top: 12px;
+  text-align: center;
+}
+
+.input-group {
+  margin-top: 25px;
+}
+
+.input-group label {
+  font-size: 16px;
+  color: #fff;
+  display: block;
+}
+
+.input-group div {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 10px;
+}
+
+.input-group input[type="radio"] {
+  margin-right: 10px;
+}
+
+.btn {
+  padding: 15px 30px;
+  background: linear-gradient(145deg, #9b59b6, #8e44ad);
+  border-radius: 12px;
+  color: white;
+  font-weight: bold;
+  border: none;
+  cursor: pointer;
+  transition: background 0.3s ease, transform 0.3s ease;
+}
+
+.btn:hover {
+  transform: scale(1.05);
+  background: linear-gradient(145deg, #8e44ad, #732d91);
+}
+
+.input-group div span {
+  color: #bbb;
+  font-size: 14px;
+}
+
+  </style>
+</head>
+<body>
+  <div class="loader-screen" id="loader">
+    <img src="../img/logotip.jpg" alt="Logo" class="loader-logo"/>
+    <div>Завантаження...</div>
+    <div class="loader"></div>
+  </div>
+ <div class="section" id="payment-section" style="display: none;">
+  <h3 style="color: #FFFFFF;">Оплата</h3>
+  <p style="font-size: 18px; color: #FFFFFF;">Вартість доставки: <strong>80 грн</strong></p>
+
+<div class="input-group" style="margin-top: 20px;">
+  <label style="color: #FFFFFF; font-size: 16px;">Виберіть спосіб оплати:</label>
+  <div style="display: flex; align-items: center; margin-top: 10px;">
+    <label style="color: #FFFFFF; font-size: 16px;">
+      <input type="radio" name="payment-method" value="cash" checked /> Готівка
+    </label>
+    <label style="color: #FFFFFF; font-size: 16px;">
+      <input type="radio" name="payment-method" value="card" /> Картка
+    </label>
+  </div>
+</div>
+
+
+  <div class="section" style="text-align: center; margin-top: 20px;">
+    <button class="btn" id="confirm-payment-btn" style="background-color: #8e44ad; padding: 14px 28px; font-size: 18px; width: 60%; cursor: pointer;">
+      Підтвердити оплату
+    </button>
+  </div>
+</div>
+
+
+  <div class="app" id="app">
+    <div id="order-section">
+      <div class="map-container">
+        <iframe src="https://www.google.com/maps/embed?..." allowfullscreen loading="lazy"></iframe>
+      </div>
+      <div class="section">
+        <div class="input-group">
+          <label for="delivery-address">Куди доставити?</label>
+          <div class="input-with-icon">
+            <input type="text" id="delivery-address" placeholder="вул. Київська, 20" />
+            <span class="icon">📍</span>
+          </div>
+        </div>
+
+        <div class="input-group">
+          <label for="order-desc">Що потрібно придбати?</label>
+          <div class="input-with-icon">
+            <textarea id="order-desc" placeholder="Опишіть, що саме потрібно купити, де і як..."></textarea>
+            <span class="icon">📝</span>
+          </div>
+        </div>
+
+        <button class="btn continue-btn" id="continue-btn">Продовжити</button>
+      </div>
+    </div>
+
+    <div class="tariffs" id="tariffs">
+      <h3>Тарифи на доставку</h3>
+      <div class="tariff-item">Місто — 75 грн</div>
+      <div class="tariff-item">Околиці — 120 грн</div>
+      <div class="tariff-item">Очікування — 10 грн/10 хв</div>
+    </div>
+
+    <div class="profile" id="profile">
+      <div class="profile-circle"><img id="user-photo" src="" alt="User Photo"></div>
+      <div class="phone-number" id="user-name"></div>
+      <div class="profile-actions">
+      <div class="profile-actions">
+        <div id="edit-profile"><img src="img/edit.png"/> Редагування профілю</div>
+        <div id="toggle-theme"><img src="img/theme.png"/> Змінити тему</div>
+        <div id="view-history"><img src="img/school.png"/> Тариф</div>
+        <div id="contact-support"><img src="img/support.png"/> Зв'язок з підтримкою</div>
+        <h1>Соціальні мережі</h1>
+        <div id="telegram"><img src="img/telegram.png"/> Наш канал в Telegram</div>
+        <div id="instagram"><img src="img/instagram.png"/> Наша сторінка в Instagram</div>
+        <h2>Мої адреси</h2>
+        <div id="adres"><img src="img/plus.png"/> Додати адресу</div>
+      </div>
+
+      </div>
+    </div>
+
+    <div class="edit-profile-section" id="edit-profile-section">
+      <input type="text" id="new-name" placeholder="Ім'я" />
+      <button class="btn" id="save-profile">Зберегти</button>
+    </div>
+
+    <div class="history" id="history">
+      <h3>Історія замовлень</h3>
+      <ul id="history-list"></ul>
+    </div>
+
+    <div class="bottom-nav">
+      <div class="nav-item" onclick="showSection('history', this)">
+        <div class="nav-icon">🗒️</div>
+        <div class="nav-label">Історія</div>
+      </div>
+      <div class="nav-center-btn" onclick="showSection('order-section', this)">
+        <div class="plus-btn">+</div>
+      </div>
+      <div class="nav-item" onclick="showSection('profile', this)">
+        <div class="nav-icon">👤</div>
+        <div class="nav-label">Профіль</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal" id="modal" style="display: none;">
+    <div class="modal-content">
+      <h3>Виберіть тариф</h3>
+      <select>
+        <option value="city">Місто — 75 грн</option>
+        <option value="suburb">Околиці — 120 грн</option>
+      </select>
+      <button class="btn" onclick="closeModal()">OK</button>
+    </div>
+  </div>
+
+  <script>
+    const tg = window.Telegram.WebApp;
+    tg.ready();
+
+    window.addEventListener("load", () => {
+      document.getElementById("loader").style.display = "none";
+      document.getElementById("app").style.display = "flex";
+      showSection("order-section");
+    });
+
+    function showSection(id, element) {
+      const sections = ["order-section", "tariffs", "profile", "edit-profile-section", "history", "payment-section"];
+      sections.forEach(s => {
+        const el = document.getElementById(s);
+        if (el) el.style.display = "none";
+      });
+
+      const targetSection = document.getElementById(id);
+      if (targetSection) targetSection.style.display = "block";
+
+      const navItems = document.querySelectorAll(".nav-item");
+      navItems.forEach(el => el.classList.remove("active"));
+      if (element?.classList.contains("nav-item")) {
+        element.classList.add("active");
+      }
+    }
+
+
+    document.getElementById("continue-btn").addEventListener("click", () => {
+  // Показати розділ оплати, коли натискається 'Продовжити'
+  showSection("payment-section");
+});
+
+document.getElementById("confirm-payment-btn").addEventListener("click", () => {
+  const address = document.getElementById("delivery-address").value;
+  const description = document.getElementById("order-desc").value;
+  const paymentMethod = document.querySelector('input[name="payment-method"]:checked').value;
+
+  // Підготовка тексту замовлення
+  const orderText = `Адреса: ${address} — ${description} — Оплата: ${paymentMethod === 'cash' ? 'Готівка' : 'Картка'}`;
+
+  // Додавання замовлення в історію
+  addToHistory(orderText);
+
+  // Показати повідомлення про підтвердження і очистити поля
+  alert("Замовлення оформлено!");
+  document.getElementById("delivery-address").value = "";
+  document.getElementById("order-desc").value = "";
+
+  // Показати розділ історії після підтвердження оплати
+  showSection("history");
+});
+
+function addToHistory(order) {
+  const historyList = document.getElementById("history-list");
+  const listItem = document.createElement("li");
+  listItem.textContent = order;
+  historyList.appendChild(listItem);
+}
+
+function showSection(id) {
+  const sections = ["order-section", "tariffs", "profile", "edit-profile-section", "history", "payment-section"];
+  sections.forEach(s => {
+    const el = document.getElementById(s);
+    if (el) el.style.display = "none";
+  });
+
+  const targetSection = document.getElementById(id);
+  if (targetSection) targetSection.style.display = "block";
+}
+
+    function addToHistory(order) {
+      const historyList = document.getElementById("history-list");
+      const listItem = document.createElement("li");
+      listItem.textContent = order;
+      historyList.appendChild(listItem);
+    }
+
+    document.getElementById("toggle-theme").addEventListener("click", () => {
+      document.body.classList.toggle("light-theme");
+    });
+
+    document.getElementById("edit-profile").addEventListener("click", () => {
+      showSection("edit-profile-section");
+    });
+
+    document.getElementById("save-profile").addEventListener("click", () => {
+      const newName = document.getElementById("new-name").value;
+      if (newName.trim()) {
+        document.getElementById("user-name").textContent = newName;
+        showSection("profile");
+      }
+    });
+
+    if (tg.initDataUnsafe?.user) {
+      const user = tg.initDataUnsafe.user;
+      document.getElementById("user-name").textContent = user.first_name + (user.last_name ? ' ' + user.last_name : '');
+      document.getElementById("user-photo").src = user.photo_url || "placeholder.jpg";
+    }
+
+    function closeModal() {
+      document.getElementById("modal").style.display = "none";
+    }
+    document.getElementById("view-history").addEventListener("click", () => {
+      showSection("tariffs");
+    });
+
+    function closeModal() {
+      document.getElementById("modal").style.display = "none";
+    }
+  </script>
+</body>
+</html>
