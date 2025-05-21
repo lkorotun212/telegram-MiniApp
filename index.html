@@ -6,369 +6,452 @@
   <title>Городська доставка</title>
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
   <style>
-body {
-  margin: 0;
-  font-family: 'Roboto', sans-serif;
-  background-color: #121212;
-  color: #ffffff;
-  transition: background-color 0.3s, color 0.3s;
-}
+    body {
+      margin: 0;
+      font-family: 'Roboto', sans-serif;
+      background-color: #121212;
+      color: #ffffff;
+      transition: background-color 0.3s, color 0.3s;
+    }
 
-body.light-theme {
-  background-color: #ffffff;
-  color: #121212;
-}
+    body.light-theme {
+      background-color: #ffffff;
+      color: #121212;
+    }
 
-.loader-screen {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
-  background-color: #FFD500;
-  color: black;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-direction: column;
-  z-index: 1000;
-}
+    .loader-screen {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background-color: #FFD500;
+      color: black;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      z-index: 1000;
+    }
 
-.loader-logo {
-  width: 260px;
-  max-width: 80%;
-  height: auto;
-  margin-bottom: 24px;
-  transition: transform 0.3s ease-in-out;
-}
+    .loader-logo {
+      width: 260px;
+      max-width: 80%;
+      height: auto;
+      margin-bottom: 24px;
+      transition: transform 0.3s ease-in-out;
+    }
 
-.loader {
-  margin-top: 24px;
-  border: 4px solid #f3f3f3;
-  border-radius: 50%;
-  border-top: 4px solid #555;
-  width: 30px;
-  height: 30px;
-  animation: spin 1s linear infinite;
-}
+    .loader {
+      margin-top: 24px;
+      border: 4px solid #f3f3f3;
+      border-radius: 50%;
+      border-top: 4px solid #555;
+      width: 30px;
+      height: 30px;
+      animation: spin 1s linear infinite;
+    }
 
-@keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
-}
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
 
-.app {
-  display: none;
-  flex-direction: column;
-  height: 100vh;
-}
+    .app {
+      display: none;
+      flex-direction: column;
+      height: 100vh;
+    }
 
-.map-container iframe {
-  border: none;
-  width: 100%;
-  height: 250px;
-}
+    .map-container iframe {
+      border: none;
+      width: 100%;
+      height: 250px;
+    }
 
-.section {
-  padding: 16px;
-  background-color: #1e1e1e;
-  border-top: 1px solid #333;
-}
+    .section {
+      padding: 16px;
+      background-color: #1e1e1e;
+      border-top: 1px solid #333;
+    }
 
-body.light-theme .section {
-  background-color: #f4f4f4;
-  color: #121212;
-}
+    body.light-theme .section {
+      background-color: #f4f4f4;
+      color: #121212;
+    }
 
-input, textarea, select {
-  width: 100%;
-  padding: 10px;
-  margin-top: 8px;
-  border-radius: 8px;
-  border: 1px solid #444;
-  background-color: #2a2a2a;
-  color: #fff;
-  font-size: 14px;
-}
+    input, textarea, select {
+      width: 100%;
+      padding: 10px;
+      margin-top: 8px;
+      border-radius: 8px;
+      border: 1px solid #444;
+      background-color: #2a2a2a;
+      color: #fff;
+      font-size: 14px;
+    }
 
-body.light-theme input, body.light-theme textarea, body.light-theme select {
-  background-color: #ffffff;
-  color: #121212;
-  border-color: #ccc;
-}
+    body.light-theme input,
+    body.light-theme textarea,
+    body.light-theme select {
+      background-color: #ffffff;
+      color: #121212;
+      border-color: #ccc;
+    }
 
-.btn {
-  width: 100%;
-  padding: 12px;
-  margin-top: 16px;
-  border: none;
-  border-radius: 12px;
-  background: linear-gradient(145deg, #9b59b6, #8e44ad);
-  color: white;
-  font-size: 16px;
-  font-weight: bold;
-  cursor: pointer;
-  box-shadow: 0 4px 8px rgba(0,0,0,0.3);
-  transition: all 0.2s ease-in-out;
-}
+    .btn {
+      width: 100%;
+      padding: 12px;
+      margin-top: 16px;
+      border: none;
+      border-radius: 12px;
+      background: linear-gradient(145deg, #9b59b6, #8e44ad);
+      color: white;
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+      transition: all 0.2s ease-in-out;
+    }
 
-.btn:hover {
-  background: linear-gradient(145deg, #8e44ad, #732d91);
-  transform: translateY(-2px);
-}
+    .btn:hover {
+      background: linear-gradient(145deg, #8e44ad, #732d91);
+      transform: translateY(-2px);
+    }
 
-.bottom-nav {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 10px 20px;
-  background-color: #1e1e1e;
-  border-top: 1px solid #333;
-  position: fixed;
-  bottom: 0;
-  width: 100%;
-  z-index: 999;
-}
+    .btn-secondary {
+      background: #333;
+    }
 
-body.light-theme .bottom-nav {
-  background-color: #f4f4f4;
-}
+    .btn-secondary:hover {
+      background: #444;
+    }
 
-.nav-item {
-  flex: 1;
-  text-align: center;
-  color: #ccc;
-  font-size: 12px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  cursor: pointer;
-  transition: color 0.3s ease, transform 0.3s ease;
-}
+    .bottom-nav {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 20px;
+      background-color: #1e1e1e;
+      border-top: 1px solid #333;
+      position: fixed;
+      bottom: 0;
+      width: 100%;
+      z-index: 999;
+    }
 
-.nav-item:hover {
-  color: #ffffff;
-  transform: translateY(-2px);
-}
+    body.light-theme .bottom-nav {
+      background-color: #f4f4f4;
+    }
 
-.nav-item.active {
-  color: #fff;
-  font-weight: bold;
-}
+    .nav-item {
+      flex: 1;
+      text-align: center;
+      color: #ccc;
+      font-size: 12px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      cursor: pointer;
+      transition: color 0.3s ease, transform 0.3s ease;
+    }
 
-.nav-center-btn {
-  width: 64px;
-  height: 64px;
-  border-radius: 50%;
-  background-color: #8e44ad;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  position: relative;
-  top: -28px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
-  z-index: 100;
-  transition: transform 0.6s ease-in-out;
-}
+    .nav-item:hover {
+      color: #ffffff;
+      transform: translateY(-2px);
+    }
 
-.nav-center-btn:hover {
-  transform: rotate(360deg);
-}
+    body.light-theme .nav-item:hover {
+      color: #000;
+    }
 
-.plus-btn {
-  color: white;
-  font-size: 32px;
-  font-weight: bold;
-}
+    .nav-item.active {
+      color: #fff;
+      font-weight: bold;
+    }
 
-.profile, .tariffs, .edit-profile-section {
-  display: none;
-  padding: 16px;
-}
+    body.light-theme .nav-item.active {
+      color: #000;
+    }
 
-.profile-circle img {
-  width: 80px;
-  height: 80px;
-  border-radius: 50%;
-  margin: auto;
-  display: block;
-}
+    .nav-center-btn {
+      width: 64px;
+      height: 64px;
+      border-radius: 50%;
+      background-color: #8e44ad;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      top: -28px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+      z-index: 100;
+      transition: transform 0.6s ease-in-out;
+    }
 
-.phone-number {
-  margin-top: 10px;
-  font-size: 16px;
-  text-align: center;
-}
+    .nav-center-btn:hover {
+      transform: rotate(360deg);
+    }
 
-.profile-actions div, .tariff-item {
-  padding: 10px 0;
-  border-bottom: 1px solid #333;
-  cursor: pointer;
-  color: #bb86fc;
-}
+    .plus-btn {
+      color: white;
+      font-size: 32px;
+      font-weight: bold;
+    }
 
-.modal {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background-color: rgba(0, 0, 0, 0.5);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 1001;
-}
+    .profile, .tariffs, .edit-profile-section,
+    .support-section, .courier-section, .admin-section {
+      display: none;
+      padding: 16px;
+    }
 
-.modal-content {
-  background-color: #1e1e1e;
-  padding: 20px;
-  border-radius: 8px;
-  text-align: center;
-  width: 80%;
-  max-width: 300px;
-}
+    .profile-circle img {
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      margin: auto;
+      display: block;
+    }
 
-.modal-content h3 {
-  margin-bottom: 16px;
-}
+    .phone-number {
+      margin-top: 10px;
+      font-size: 16px;
+      text-align: center;
+    }
 
-.history {
-  padding: 16px;
-  background-color: #1e1e1e;
-  color: #ffffff;
-}
+    .profile-actions div, .tariff-item {
+      padding: 10px 0;
+      border-bottom: 1px solid #333;
+      cursor: pointer;
+      color: #bb86fc;
+    }
 
-body.light-theme .history {
-  background-color: #f4f4f4;
-  color: #121212;
-}
+    .modal {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.5);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 1001;
+    }
 
-.history h3 {
-  margin-bottom: 12px;
-}
+    .modal-content {
+      background-color: #1e1e1e;
+      padding: 20px;
+      border-radius: 8px;
+      text-align: center;
+      width: 80%;
+      max-width: 300px;
+    }
 
-.history ul {
-  list-style: none;
-  padding: 0;
-}
+    body.light-theme .modal-content {
+      background-color: #fff;
+    }
 
-.history li {
-  padding: 10px;
-  border-bottom: 1px solid #333;
-}
+    .modal-content h3 {
+      margin-bottom: 16px;
+    }
 
-.continue-btn {
-  position: relative;
-  margin: 16px 0;
-  z-index: 1;
-}
+    .history {
+      padding: 16px;
+      background-color: #1e1e1e;
+      color: #ffffff;
+    }
 
-.input-group {
-  margin-bottom: 16px;
-}
+    body.light-theme .history {
+      background-color: #f4f4f4;
+      color: #121212;
+    }
 
-.input-group label {
-  font-size: 14px;
-  color: #ccc;
-  margin-bottom: 6px;
-  display: block;
-}
+    .history h3 {
+      margin-bottom: 12px;
+    }
 
-.input-with-icon {
-  position: relative;
-}
+    .history ul {
+      list-style: none;
+      padding: 0;
+    }
 
-.input-with-icon input,
-.input-with-icon textarea {
-  width: 100%;
-  padding: 12px 36px 12px 12px;
-  border-radius: 10px;
-  border: 1px solid #333;
-  background-color: #2a2a2a;
-  color: #fff;
-  font-size: 14px;
-}
+    .history li {
+      padding: 10px;
+      border-bottom: 1px solid #333;
+    }
 
-body.light-theme .input-with-icon input,
-body.light-theme .input-with-icon textarea {
-  background-color: #ffffff;
-  color: #121212;
-  border-color: #ccc;
-}
+    .continue-btn {
+      position: relative;
+      margin: 16px 0;
+      z-index: 1;
+    }
 
-.input-with-icon .icon {
-  position: absolute;
-  right: 10px;
-  top: 50%;
-  transform: translateY(-50%);
-  color: #bb86fc;
-  font-size: 18px;
-}
+    .input-group {
+      margin-bottom: 16px;
+    }
 
-#payment-section {
-  background-color: #2a2a2a;
-  border-radius: 15px;
-  padding: 30px;
-  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.4);
-  transition: all 0.3s ease;
-}
+    .input-group label {
+      font-size: 14px;
+      color: #ccc;
+      margin-bottom: 6px;
+      display: block;
+    }
 
-#payment-section h3 {
-  font-size: 26px;
-  font-weight: bold;
-  color: #ffffff;
-  text-align: center;
-}
+    body.light-theme .input-group label {
+      color: #666;
+    }
 
-#payment-section p {
-  font-size: 18px;
-  color: #ffffff;
-  margin-top: 12px;
-  text-align: center;
-}
+    .input-with-icon {
+      position: relative;
+    }
 
-.input-group {
-  margin-top: 25px;
-}
+    .input-with-icon input,
+    .input-with-icon textarea {
+      width: 100%;
+      padding: 12px 36px 12px 12px;
+      border-radius: 10px;
+      border: 1px solid #333;
+      background-color: #2a2a2a;
+      color: #fff;
+      font-size: 14px;
+    }
 
-.input-group label {
-  font-size: 16px;
-  color: #fff;
-  display: block;
-}
+    body.light-theme .input-with-icon input,
+    body.light-theme .input-with-icon textarea {
+      background-color: #ffffff;
+      color: #121212;
+      border-color: #ccc;
+    }
 
-.input-group div {
-  display: flex;
-  justify-content: space-between;
-  margin-top: 10px;
-}
+    .input-with-icon .icon {
+      position: absolute;
+      right: 10px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: #bb86fc;
+      font-size: 18px;
+    }
 
-.input-group input[type="radio"] {
-  margin-right: 10px;
-}
+    #payment-section {
+      background-color: #2a2a2a;
+      border-radius: 15px;
+      padding: 30px;
+      box-shadow: 0 6px 15px rgba(0, 0, 0, 0.4);
+      transition: all 0.3s ease;
+    }
 
-.btn {
-  padding: 15px 30px;
-  background: linear-gradient(145deg, #9b59b6, #8e44ad);
-  border-radius: 12px;
-  color: white;
-  font-weight: bold;
-  border: none;
-  cursor: pointer;
-  transition: background 0.3s ease, transform 0.3s ease;
-}
+    body.light-theme #payment-section {
+      background-color: #f4f4f4;
+    }
 
-.btn:hover {
-  transform: scale(1.05);
-  background: linear-gradient(145deg, #8e44ad, #732d91);
-}
+    #payment-section h3 {
+      font-size: 26px;
+      font-weight: bold;
+      color: #ffffff;
+      text-align: center;
+    }
 
-.input-group div span {
-  color: #bbb;
-  font-size: 14px;
-}
+    body.light-theme #payment-section h3 {
+      color: #121212;
+    }
 
+    #payment-section p {
+      font-size: 18px;
+      color: #ffffff;
+      margin-top: 12px;
+      text-align: center;
+    }
+
+    body.light-theme #payment-section p {
+      color: #121212;
+    }
+
+    .order-status {
+      padding: 20px;
+      text-align: center;
+      display: none;
+    }
+
+    .status-icon {
+      font-size: 50px;
+      margin-bottom: 20px;
+    }
+
+    .courier-info {
+      margin-top: 20px;
+      padding: 15px;
+      background-color: #333;
+      border-radius: 10px;
+    }
+
+    body.light-theme .courier-info {
+      background-color: #e0e0e0;
+    }
+
+    .social-icons {
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+      margin-top: 20px;
+    }
+
+    .social-icon {
+      font-size: 30px;
+      color: #bb86fc;
+    }
+
+    .admin-panel {
+      display: none;
+    }
+
+    .stats-container {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 20px;
+    }
+
+    .stat-card {
+      flex: 1;
+      min-width: 120px;
+      padding: 15px;
+      background-color: #333;
+      border-radius: 10px;
+      text-align: center;
+    }
+
+    body.light-theme .stat-card {
+      background-color: #e0e0e0;
+    }
+
+    .stat-value {
+      font-size: 24px;
+      font-weight: bold;
+      margin: 10px 0;
+    }
+
+    .courier-registration {
+      display: none;
+      padding: 20px;
+    }
+
+    .hidden {
+      display: none;
+    }
+
+    .active-order {
+      background-color: #8e44ad;
+      padding: 15px;
+      border-radius: 10px;
+      margin-bottom: 15px;
+    }
+
+    .action-buttons {
+      display: flex;
+      gap: 10px;
+      margin-top: 15px;
+    }
   </style>
 </head>
 <body>
@@ -377,32 +460,9 @@ body.light-theme .input-with-icon textarea {
     <div>Завантаження...</div>
     <div class="loader"></div>
   </div>
- <div class="section" id="payment-section" style="display: none;">
-  <h3 style="color: #FFFFFF;">Оплата</h3>
-  <p style="font-size: 18px; color: #FFFFFF;">Вартість доставки: <strong>80 грн</strong></p>
-
-<div class="input-group" style="margin-top: 20px;">
-  <label style="color: #FFFFFF; font-size: 16px;">Виберіть спосіб оплати:</label>
-  <div style="display: flex; align-items: center; margin-top: 10px;">
-    <label style="color: #FFFFFF; font-size: 16px;">
-      <input type="radio" name="payment-method" value="cash" checked /> Готівка
-    </label>
-    <label style="color: #FFFFFF; font-size: 16px;">
-      <input type="radio" name="payment-method" value="card" /> Картка
-    </label>
-  </div>
-</div>
-
-
-  <div class="section" style="text-align: center; margin-top: 20px;">
-    <button class="btn" id="confirm-payment-btn" style="background-color: #8e44ad; padding: 14px 28px; font-size: 18px; width: 60%; cursor: pointer;">
-      Підтвердити оплату
-    </button>
-  </div>
-</div>
-
 
   <div class="app" id="app">
+    <!-- Order Section -->
     <div id="order-section">
       <div class="map-container">
         <iframe src="https://www.google.com/maps/embed?..." allowfullscreen loading="lazy"></iframe>
@@ -419,7 +479,7 @@ body.light-theme .input-with-icon textarea {
         <div class="input-group">
           <label for="order-desc">Що потрібно придбати?</label>
           <div class="input-with-icon">
-            <textarea id="order-desc" placeholder="Опишіть, що саме потрібно купити, де і як..."></textarea>
+            <textarea id="order-desc" rows="5" placeholder="Опишіть, що саме потрібно купити, де і як...&#10;Наприклад:&#10;Уважаемый курьер, съездите в АТБ (центр) или район, возьмите все по данному списку.&#10;Список:&#10;1. Буряк&#10;2. Марковь&#10;3. Картофель&#10;4. Клбаски&#10;5. Сыра коньячку"></textarea>
             <span class="icon">📝</span>
           </div>
         </div>
@@ -428,44 +488,189 @@ body.light-theme .input-with-icon textarea {
       </div>
     </div>
 
+    <!-- Payment Section -->
+    <div class="section" id="payment-section">
+      <h3>Оплата</h3>
+      <p>Вартість доставки: <strong>80 грн</strong></p>
+
+      <div class="input-group">
+        <label>Виберіть спосіб оплати:</label>
+        <div style="display: flex; align-items: center; margin-top: 10px; gap: 20px;">
+          <label>
+            <input type="radio" name="payment-method" value="cash" checked /> Готівка
+          </label>
+          <label>
+            <input type="radio" name="payment-method" value="card" /> Картка
+          </label>
+        </div>
+      </div>
+
+      <button class="btn" id="confirm-payment-btn">Підтвердити оплату</button>
+      <button class="btn btn-secondary" id="cancel-order-btn">Скасувати</button>
+    </div>
+
+    <!-- Order Status Section -->
+    <div class="order-status" id="order-status-section">
+      <div class="status-icon">🔄</div>
+      <h3>Шукаємо кур'єра...</h3>
+      <p>Ваше замовлення обробляється</p>
+
+      <div class="courier-info hidden" id="courier-info">
+        <h4>Ваш кур'єр:</h4>
+        <p id="courier-name">Іван Петренко</p>
+        <p id="courier-phone">+380 99 123 4567</p>
+        <p id="courier-rating">Рейтинг: 4.9 ★</p>
+
+        <div class="action-buttons">
+          <button class="btn" id="chat-with-courier">Чат з кур'єром</button>
+          <button class="btn btn-secondary" id="cancel-active-order">Скасувати замовлення</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tariffs Section -->
     <div class="tariffs" id="tariffs">
       <h3>Тарифи на доставку</h3>
       <div class="tariff-item">Місто — 75 грн</div>
       <div class="tariff-item">Околиці — 120 грн</div>
       <div class="tariff-item">Очікування — 10 грн/10 хв</div>
+
+      <h3 style="margin-top: 30px;">Наші соціальні мережі</h3>
+      <div class="social-icons">
+        <a href="https://t.me/yourchannel" class="social-icon">📢</a>
+        <a href="https://instagram.com/yourpage" class="social-icon">📷</a>
+      </div>
     </div>
 
+    <!-- Profile Section -->
     <div class="profile" id="profile">
       <div class="profile-circle"><img id="user-photo" src="" alt="User Photo"></div>
       <div class="phone-number" id="user-name"></div>
-      <div class="profile-actions">
-      <div class="profile-actions">
-        <div id="edit-profile"><img src="img/edit.png"/> Редагування профілю</div>
-        <div id="toggle-theme"><img src="img/theme.png"/> Змінити тему</div>
-        <div id="view-history"><img src="img/school.png"/> Тариф</div>
-        <div id="contact-support"><img src="img/support.png"/> Зв'язок з підтримкою</div>
-        <h1>Соціальні мережі</h1>
-        <div id="telegram"><img src="img/telegram.png"/> Наш канал в Telegram</div>
-        <div id="instagram"><img src="img/instagram.png"/> Наша сторінка в Instagram</div>
-        <h2>Мої адреси</h2>
-        <div id="adres"><img src="img/plus.png"/> Додати адресу</div>
-      </div>
+      <div class="phone-number" id="user-phone"></div>
 
+      <div class="profile-actions">
+        <div id="edit-profile">✏️ Редагування профілю</div>
+        <div id="toggle-theme">🌓 Змінити тему</div>
+        <div id="view-tariffs">💰 Тарифи</div>
+        <div id="contact-support">🛟 Зв'язок з підтримкою</div>
+
+        <h3 style="margin-top: 20px;">Історія замовлень</h3>
+        <div id="view-history">📋 Переглянути історію</div>
+
+        <h3 style="margin-top: 20px;">Мої адреси</h3>
+        <div id="add-address">➕ Додати адресу</div>
+
+        <!-- Admin/Courier Access -->
+        <div id="courier-access" class="hidden">🚗 Режим кур'єра</div>
+        <div id="admin-access" class="hidden">👑 Адмін панель</div>
       </div>
     </div>
 
+    <!-- Edit Profile Section -->
     <div class="edit-profile-section" id="edit-profile-section">
-      <input type="text" id="new-name" placeholder="Ім'я" />
+      <h3>Редагування профілю</h3>
+      <div class="input-group">
+        <label for="new-name">Ім'я</label>
+        <input type="text" id="new-name" placeholder="Введіть ваше ім'я" />
+      </div>
+
+      <div class="input-group">
+        <label for="new-phone">Телефон</label>
+        <input type="tel" id="new-phone" placeholder="Введіть ваш телефон" />
+      </div>
+
       <button class="btn" id="save-profile">Зберегти</button>
+      <button class="btn btn-secondary" onclick="showSection('profile')">Назад</button>
     </div>
 
+    <!-- Support Section -->
+    <div class="support-section" id="support-section">
+      <h3>Зв'язок з підтримкою</h3>
+      <p>Якщо у вас виникли питання або проблеми, напишіть нам:</p>
+
+      <div class="input-group">
+        <label for="support-message">Ваше повідомлення</label>
+        <textarea id="support-message" rows="5" placeholder="Опишіть вашу проблему..."></textarea>
+      </div>
+
+      <button class="btn" id="send-support-message">Надіслати</button>
+      <button class="btn btn-secondary" onclick="showSection('profile')">Назад</button>
+    </div>
+
+    <!-- History Section -->
     <div class="history" id="history">
       <h3>Історія замовлень</h3>
-      <ul id="history-list"></ul>
+      <ul id="history-list">
+        <!-- Will be populated dynamically -->
+      </ul>
+      <button class="btn btn-secondary" onclick="showSection('profile')">Назад</button>
     </div>
 
+    <!-- Courier Section -->
+    <div class="courier-section" id="courier-section">
+      <h3>Режим кур'єра</h3>
+      <div id="active-orders">
+        <h4>Активні замовлення</h4>
+        <div id="orders-list">
+          <!-- Will be populated dynamically -->
+        </div>
+      </div>
+
+      <div id="no-orders" class="hidden">
+        <p>Наразі немає доступних замовлень</p>
+      </div>
+
+      <button class="btn btn-secondary" onclick="showSection('profile')">Назад</button>
+    </div>
+
+    <!-- Admin Section -->
+    <div class="admin-section" id="admin-section">
+      <h3>Адмін панель</h3>
+
+      <div class="stats-container">
+        <div class="stat-card">
+          <div>Сьогодні</div>
+          <div class="stat-value">12</div>
+          <div>замовлень</div>
+        </div>
+
+        <div class="stat-card">
+          <div>За тиждень</div>
+          <div class="stat-value">84</div>
+          <div>замовлень</div>
+        </div>
+
+        <div class="stat-card">
+          <div>За місяць</div>
+          <div class="stat-value">356</div>
+          <div>замовлень</div>
+        </div>
+      </div>
+
+      <div class="input-group" style="margin-top: 20px;">
+        <button class="btn" id="manage-couriers">Управління кур'єрами</button>
+        <button class="btn" id="view-all-orders">Перегляд усіх замовлень</button>
+        <button class="btn btn-secondary" onclick="showSection('profile')">Назад</button>
+      </div>
+    </div>
+
+    <!-- Courier Registration -->
+    <div class="courier-registration" id="courier-registration">
+      <h3>Реєстрація кур'єра</h3>
+      <p>Для реєстрації як кур'єр, введіть спеціальний код доступу:</p>
+
+      <div class="input-group">
+        <label for="courier-code">Код доступу</label>
+        <input type="password" id="courier-code" placeholder="Введіть код доступу" />
+      </div>
+
+      <button class="btn" id="register-as-courier">Зареєструватися</button>
+      <button class="btn btn-secondary" onclick="showSection('profile')">Назад</button>
+    </div>
+
+    <!-- Bottom Navigation -->
     <div class="bottom-nav">
-      <div class="nav-item" onclick="showSection('history', this)">
+      <div class="nav-item active" onclick="showSection('history', this)">
         <div class="nav-icon">🗒️</div>
         <div class="nav-label">Історія</div>
       </div>
@@ -479,29 +684,102 @@ body.light-theme .input-with-icon textarea {
     </div>
   </div>
 
-  <div class="modal" id="modal" style="display: none;">
+  <!-- Modal for Address -->
+  <div class="modal" id="address-modal" style="display: none;">
     <div class="modal-content">
-      <h3>Виберіть тариф</h3>
-      <select>
-        <option value="city">Місто — 75 грн</option>
-        <option value="suburb">Околиці — 120 грн</option>
-      </select>
-      <button class="btn" onclick="closeModal()">OK</button>
+      <h3>Додати адресу</h3>
+      <input type="text" id="new-address" placeholder="Введіть вашу адресу" />
+      <button class="btn" onclick="saveAddress()">Зберегти</button>
+      <button class="btn btn-secondary" onclick="closeModal()">Скасувати</button>
     </div>
   </div>
 
   <script>
     const tg = window.Telegram.WebApp;
     tg.ready();
+    tg.expand();
 
+    // Initialize user data
+    let userData = {
+      name: '',
+      phone: '',
+      photo: '',
+      isCourier: false,
+      isAdmin: false,
+      addresses: [],
+      orders: []
+    };
+
+    // Simulated courier data
+    const couriers = [
+      { id: 1, name: "Іван Петренко", phone: "+380991234567", rating: 4.9 },
+      { id: 2, name: "Олексій Сидоренко", phone: "+380671234567", rating: 4.8 }
+    ];
+
+    // Sample orders data
+    const sampleOrders = [
+      { id: 1, date: "20.05.2025", address: "вул. Київська, 20", items: "Буряк, Марковь, Картофель", status: "Виконано", price: "80 грн" },
+      { id: 2, date: "19.05.2025", address: "вул. Шевченка, 15", items: "Хліб, Молоко, Яйця", status: "Виконано", price: "75 грн" }
+    ];
+
+    // Initialize the app
     window.addEventListener("load", () => {
       document.getElementById("loader").style.display = "none";
       document.getElementById("app").style.display = "flex";
+
+      // Initialize user data from Telegram
+      if (tg.initDataUnsafe?.user) {
+        const user = tg.initDataUnsafe.user;
+        userData.name = user.first_name + (user.last_name ? ' ' + user.last_name : '');
+        userData.photo = user.photo_url || '';
+
+        // Request phone number if not available
+        if (!user.phone_number) {
+          tg.requestContact((contact) => {
+            userData.phone = contact.phone_number;
+            updateProfileDisplay();
+          });
+        } else {
+          userData.phone = user.phone_number;
+        }
+
+        updateProfileDisplay();
+      }
+
+      // Load sample data
+      userData.orders = sampleOrders;
+      populateHistory();
+
+      // Show order section by default
       showSection("order-section");
     });
 
+    // Update profile display
+    function updateProfileDisplay() {
+      document.getElementById("user-name").textContent = userData.name;
+      document.getElementById("user-phone").textContent = userData.phone || 'Телефон не вказано';
+
+      if (userData.photo) {
+        document.getElementById("user-photo").src = userData.photo;
+      }
+
+      // Show/hide admin/courier access
+      if (userData.isAdmin) {
+        document.getElementById("admin-access").classList.remove("hidden");
+      }
+      if (userData.isCourier) {
+        document.getElementById("courier-access").classList.remove("hidden");
+      }
+    }
+
+    // Show specific section
     function showSection(id, element) {
-      const sections = ["order-section", "tariffs", "profile", "edit-profile-section", "history", "payment-section"];
+      const sections = [
+        "order-section", "payment-section", "order-status-section",
+        "tariffs", "profile", "edit-profile-section", "support-section",
+        "history", "courier-section", "admin-section", "courier-registration"
+      ];
+
       sections.forEach(s => {
         const el = document.getElementById(s);
         if (el) el.style.display = "none";
@@ -510,124 +788,223 @@ body.light-theme .input-with-icon textarea {
       const targetSection = document.getElementById(id);
       if (targetSection) targetSection.style.display = "block";
 
+      // Update active nav item
       const navItems = document.querySelectorAll(".nav-item");
       navItems.forEach(el => el.classList.remove("active"));
+
       if (element?.classList.contains("nav-item")) {
         element.classList.add("active");
       }
     }
 
-
-    document.getElementById("continue-btn").addEventListener("click", () => {
-  // Показати розділ оплати, коли натискається 'Продовжити'
-  showSection("payment-section");
-});
-
-document.getElementById("confirm-payment-btn").addEventListener("click", () => {
-  const address = document.getElementById("delivery-address").value;
-  const description = document.getElementById("order-desc").value;
-  const paymentMethod = document.querySelector('input[name="payment-method"]:checked').value;
-
-  // Підготовка тексту замовлення
-  const orderText = `Адреса: ${address} — ${description} — Оплата: ${paymentMethod === 'cash' ? 'Готівка' : 'Картка'}`;
-
-  // Додавання замовлення в історію
-  addToHistory(orderText);
-
-  // Показати повідомлення про підтвердження і очистити поля
-  alert("Замовлення оформлено!");
-  document.getElementById("delivery-address").value = "";
-  document.getElementById("order-desc").value = "";
-
-  // Показати розділ історії після підтвердження оплати
-  showSection("history");
-});
-
-function addToHistory(order) {
-  const historyList = document.getElementById("history-list");
-  const listItem = document.createElement("li");
-  listItem.textContent = order;
-  historyList.appendChild(listItem);
-}
-
-function showSection(id) {
-  const sections = ["order-section", "tariffs", "profile", "edit-profile-section", "history", "payment-section"];
-  sections.forEach(s => {
-    const el = document.getElementById(s);
-    if (el) el.style.display = "none";
-  });
-
-  const targetSection = document.getElementById(id);
-  if (targetSection) targetSection.style.display = "block";
-}
-
-    function addToHistory(order) {
+    // Populate history list
+    function populateHistory() {
       const historyList = document.getElementById("history-list");
-      const listItem = document.createElement("li");
-      listItem.textContent = order;
-      historyList.appendChild(listItem);
+      historyList.innerHTML = '';
+
+      userData.orders.forEach(order => {
+        const li = document.createElement("li");
+        li.innerHTML = `
+          <strong>${order.date}</strong><br>
+          <span>${order.address}</span><br>
+          <span>${order.items}</span><br>
+          <span>${order.price} - ${order.status}</span>
+        `;
+        historyList.appendChild(li);
+      });
     }
+
+    // Event listeners
+    document.getElementById("continue-btn").addEventListener("click", () => {
+      const address = document.getElementById("delivery-address").value;
+      const description = document.getElementById("order-desc").value;
+
+      if (!address || !description) {
+        alert("Будь ласка, заповніть всі поля");
+        return;
+      }
+
+      showSection("payment-section");
+    });
+
+    document.getElementById("confirm-payment-btn").addEventListener("click", () => {
+      const address = document.getElementById("delivery-address").value;
+      const description = document.getElementById("order-desc").value;
+      const paymentMethod = document.querySelector('input[name="payment-method"]:checked').value;
+
+      // Create new order
+      const newOrder = {
+        id: Date.now(),
+        date: new Date().toLocaleDateString(),
+        address: address,
+        items: description.split('\n')[0], // First line as summary
+        status: "В обробці",
+        price: "80 грн",
+        payment: paymentMethod === 'cash' ? 'Готівка' : 'Картка'
+      };
+
+      // Add to history
+      userData.orders.unshift(newOrder);
+      populateHistory();
+
+      // Show order status
+      showSection("order-status-section");
+
+      // Simulate finding a courier after 3 seconds
+      setTimeout(() => {
+        const courierInfo = document.getElementById("courier-info");
+        const courier = couriers[Math.floor(Math.random() * couriers.length)];
+
+        document.getElementById("courier-name").textContent = courier.name;
+        document.getElementById("courier-phone").textContent = courier.phone;
+        document.getElementById("courier-rating").textContent = `Рейтинг: ${courier.rating} ★`;
+
+        courierInfo.classList.remove("hidden");
+        document.querySelector(".status-icon").textContent = "🛵";
+        document.querySelector("#order-status-section h3").textContent = "Кур'єр в дорозі";
+      }, 3000);
+    });
+
+    document.getElementById("cancel-order-btn").addEventListener("click", () => {
+      showSection("order-section");
+    });
+
+    document.getElementById("cancel-active-order").addEventListener("click", () => {
+      if (confirm("Ви впевнені, що хочете скасувати замовлення?")) {
+        showSection("order-section");
+      }
+    });
+
+    document.getElementById("chat-with-courier").addEventListener("click", () => {
+      tg.openTelegramLink(`https://t.me/${tg.initDataUnsafe?.user?.username}`);
+    });
 
     document.getElementById("toggle-theme").addEventListener("click", () => {
       document.body.classList.toggle("light-theme");
     });
 
     document.getElementById("edit-profile").addEventListener("click", () => {
+      document.getElementById("new-name").value = userData.name;
+      document.getElementById("new-phone").value = userData.phone;
       showSection("edit-profile-section");
     });
 
     document.getElementById("save-profile").addEventListener("click", () => {
       const newName = document.getElementById("new-name").value;
+      const newPhone = document.getElementById("new-phone").value;
+
       if (newName.trim()) {
-        document.getElementById("user-name").textContent = newName;
+        userData.name = newName;
+        userData.phone = newPhone;
+        updateProfileDisplay();
         showSection("profile");
       }
     });
 
-    if (tg.initDataUnsafe?.user) {
-      const user = tg.initDataUnsafe.user;
-      document.getElementById("user-name").textContent = user.first_name + (user.last_name ? ' ' + user.last_name : '');
-      document.getElementById("user-photo").src = user.photo_url || "placeholder.jpg";
-    }
-
-    function closeModal() {
-      document.getElementById("modal").style.display = "none";
-    }
     document.getElementById("view-history").addEventListener("click", () => {
+      showSection("history");
+    });
+
+    document.getElementById("view-tariffs").addEventListener("click", () => {
       showSection("tariffs");
     });
 
-    function closeModal() {
-      document.getElementById("modal").style.display = "none";
+    document.getElementById("contact-support").addEventListener("click", () => {
+      showSection("support-section");
+    });
+
+    document.getElementById("send-support-message").addEventListener("click", () => {
+      const message = document.getElementById("support-message").value;
+      if (message.trim()) {
+        alert("Ваше повідомлення надіслано в підтримку");
+        document.getElementById("support-message").value = "";
+        showSection("profile");
+      }
+    });
+
+    document.getElementById("add-address").addEventListener("click", () => {
+      document.getElementById("new-address").value = "";
+      document.getElementById("address-modal").style.display = "flex";
+    });
+
+    document.getElementById("courier-access").addEventListener("click", () => {
+      if (userData.isCourier) {
+        showSection("courier-section");
+      } else {
+        showSection("courier-registration");
+      }
+    });
+
+    document.getElementById("admin-access").addEventListener("click", () => {
+      showSection("admin-section");
+    });
+
+    document.getElementById("register-as-courier").addEventListener("click", () => {
+      const code = document.getElementById("courier-code").value;
+      if (code === "COURIER123") { // Sample access code
+        userData.isCourier = true;
+        updateProfileDisplay();
+        showSection("courier-section");
+      } else {
+        alert("Невірний код доступу");
+      }
+    });
+
+    function saveAddress() {
+      const address = document.getElementById("new-address").value;
+      if (address.trim()) {
+        userData.addresses.push(address);
+        closeModal();
+        alert("Адресу збережено");
+      }
     }
-    // Приклад функції для надсилання даних на сервер або до бота
-function sendUserDataToBot(user) {
-    const url = 'https://yourserver.com/save-user-data';  // URL вашого сервера для збереження даних
-    const data = {
-        user_id: user.id,
-        first_name: user.first_name,
-        last_name: user.last_name,
-        photo_url: user.photo_url
-    };
 
-    fetch(url, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(data)
-    })
-    .then(response => response.json())
-    .then(data => console.log('User data saved:', data))
-    .catch(error => console.error('Error saving user data:', error));
-}
+    function closeModal() {
+      document.getElementById("address-modal").style.display = "none";
+    }
 
-// Викликайте цю функцію, передаючи отримані дані користувача
-if (tg.initDataUnsafe?.user) {
-    const user = tg.initDataUnsafe.user;
-    sendUserDataToBot(user);  // Надсилаємо дані на сервер
-}
+    // Simulate courier orders
+    function populateCourierOrders() {
+      const ordersList = document.getElementById("orders-list");
+      ordersList.innerHTML = '';
 
+      if (sampleOrders.length > 0) {
+        document.getElementById("no-orders").classList.add("hidden");
+
+        sampleOrders.forEach(order => {
+          const div = document.createElement("div");
+          div.className = "active-order";
+          div.innerHTML = `
+            <h4>Замовлення #${order.id}</h4>
+            <p>Адреса: ${order.address}</p>
+            <p>Деталі: ${order.items}</p>
+            <p>Оплата: ${order.payment || 'Готівка'}</p>
+            <div class="action-buttons">
+              <button class="btn accept-order-btn" data-id="${order.id}">Прийняти</button>
+            </div>
+          `;
+          ordersList.appendChild(div);
+        });
+
+        // Add event listeners to accept buttons
+        document.querySelectorAll(".accept-order-btn").forEach(btn => {
+          btn.addEventListener("click", function() {
+            const orderId = parseInt(this.getAttribute("data-id"));
+            acceptOrder(orderId);
+          });
+        });
+      } else {
+        document.getElementById("no-orders").classList.remove("hidden");
+      }
+    }
+
+    function acceptOrder(orderId) {
+      alert(`Замовлення #${orderId} прийнято!`);
+      // In a real app, you would update the order status in the backend
+    }
+
+    // Initialize courier orders when courier section is shown
+    document.getElementById("courier-section").addEventListener("click", populateCourierOrders);
   </script>
 </body>
 </html>
